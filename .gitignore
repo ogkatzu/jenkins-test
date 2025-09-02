@@ -1,0 +1,20 @@
+# Environment variables file containing secrets
+.env
+
+# Jenkins data
+jenkins_home/
+
+# IDE files
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.swp
+*.bak
+
+./shared-library
