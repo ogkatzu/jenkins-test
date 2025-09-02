@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  jenkins-controller:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jenkins-controller
+    restart: unless-stopped
+    ports:
+      - "8080:8080"      # Jenkins Web UI
+      - "50000:50000"    # Jenkins agent port
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./jenkins.yaml:/var/jenkins_home/casc_configs/jenkins.yaml
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false -Xmx2g -Xms1g
+      - JENKINS_OPTS=--httpPort=8080
+      - CASC_JENKINS_CONFIG=/var/jenkins_home/casc_configs
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+      - SSH_PRIVATE_KEY=${SSH_PRIVATE_KEY}
+      - JENKINS_ADMIN_USER=${JENKINS_ADMIN_USER}
+      - JENKINS_ADMIN_PASSWORD=${JENKINS_ADMIN_PASSWORD}
+    env_file:
+      - .env
+    networks:
+      - jenkins-network
+    user: root  # Required for Docker socket access
+    
+  # Example worker node (commented out - uncomment and modify as needed)
+  # jenkins-worker:
+  #   image: jenkins/inbound-agent:latest
+  #   container_name: jenkins-worker-1
+  #   restart: unless-stopped
+  #   environment:
+  #     - JENKINS_URL=http://jenkins-controller:8080
+  #     - JENKINS_SECRET=<agent-secret>
+  #     - JENKINS_AGENT_NAME=worker-1
+  #   networks:
+  #     - jenkins-network
+  #   depends_on:
+  #     - jenkins-controller
+
+volumes:
+  jenkins_home:
+    driver: local
+
+networks:
+  jenkins-network:
+    driver: bridge
+    name: jenkins-network

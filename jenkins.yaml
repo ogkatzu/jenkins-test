@@ -1,0 +1,90 @@
+credentials:
+  system:
+    domainCredentials:
+    - credentials:
+      - aws:
+          accessKey: "${AWS_ACCESS_KEY}"
+          id: "jenkins-controller-ec2"
+          scope: GLOBAL
+          secretKey: "${AWS_SECRET_KEY}"
+      - basicSSHUserPrivateKey:
+          description: "EC2 access ssh key for agents"
+          id: "ec2-jenkins-ssh-key"
+          privateKeySource:
+            directEntry:
+              privateKey: "${SSH_PRIVATE_KEY}"
+          scope: GLOBAL
+          username: "root"
+
+jenkins:
+  clouds:
+  - amazonEC2:
+      credentialsId: "jenkins-controller-ec2"
+      name: "aws_ec2"
+      region: "us-east-1"
+      sshKeysCredentialsId: "ec2-jenkins-ssh-key"
+      templates:
+      - ami: "ami-0360c520857e3138f"
+        amiType:
+          unixData:
+            rootCommandPrefix: "sudo"
+            sshPort: "22"
+        associatePublicIp: true
+        connectBySSHProcess: false
+        connectionStrategy: PRIVATE_IP
+        deleteRootOnTermination: false
+        description: "jenkins-agent-ami"
+        ebsEncryptRootVolume: DEFAULT
+        ebsOptimized: false
+        enclaveEnabled: false
+        hostKeyVerificationStrategy: CHECK_NEW_HARD
+        idleTerminationMinutes: "30"
+        initScript: |-
+          #!/bin/bash
+          set -e
+
+          # Update package list
+          sudo apt-get update
+
+          # Install Java 11
+          sudo apt-get install -y openjdk-11-jdk-headless fontconfig
+
+          # Set JAVA_HOME
+          export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+          echo 'export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64' >> /home/ubuntu/.bashrc
+
+          # Verify Java installation
+          java -version
+
+
+          # Clean up
+          sudo apt-get autoremove -y
+          sudo apt-get autoclean
+        javaPath: "java"
+        labelString: "aws"
+        maxTotalUses: -1
+        metadataEndpointEnabled: true
+        metadataHopsLimit: 1
+        metadataSupported: true
+        metadataTokensRequired: false
+        minimumNumberOfInstances: 0
+        minimumNumberOfSpareInstances: 0
+        mode: EXCLUSIVE
+        monitoring: false
+        numExecutors: 2
+        remoteAdmin: "ubuntu"
+        remoteFS: "/home/ubuntu"
+        securityGroups: "sg-0b61ca24515226bac"
+        stopOnTerminate: false
+        subnetId: "subnet-0e72930ae0f9ce92b"
+        t2Unlimited: false
+        tenancy: Default
+        type: "t3.micro"
+        useEphemeralDevices: false
+      useInstanceProfileForCredentials: false
+
+tool:
+  git:
+    installations:
+    - home: "git"
+      name: "Default"

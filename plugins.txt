@@ -1,0 +1,39 @@
+# Essential Jenkins Plugins
+# Core pipeline and SCM plugins
+workflow-aggregator:latest
+pipeline-stage-view:latest
+git:latest
+github:latest
+
+# Docker integration
+docker-plugin:latest
+docker-workflow:latest
+
+# Blue Ocean modern UI
+blueocean:latest
+
+# Configuration as Code
+configuration-as-code:latest
+
+# Security and user management
+role-strategy:latest
+matrix-auth:latest
+
+# Build and deployment tools
+ant:latest
+gradle:latest
+maven-plugin:latest
+nodejs:latest
+
+# Notification and reporting
+email-ext:latest
+build-timeout:latest
+timestamper:latest
+ws-cleanup:latest
+
+# Additional useful plugins
+ansicolor:latest
+build-name-setter:latest
+copyartifact:latest
+credentials-binding:latest
+ssh-agent:latest

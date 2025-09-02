@@ -17,4 +17,4 @@ Thumbs.db
 *.swp
 *.bak
 
-./shared-library
+/shared-library
